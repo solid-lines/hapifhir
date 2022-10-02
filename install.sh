@@ -102,7 +102,7 @@ function install_upstream {
         mkdir -p /etc/nginx/upstream
         cat <<EOF > /etc/nginx/upstream/hapifhir.conf
           server {
-                server_name  HOST_NAME;
+                server_name  $HOSTNAME;
                 location / {
                   proxy_pass        http://localhost:7000;
               proxy_set_header   Host \$host;
@@ -113,18 +113,18 @@ function install_upstream {
             }
 
                 listen 443 ssl; # managed by Certbot
-                ssl_certificate /etc/letsencrypt/live/HOST_NAME/fullchain.pem;
-                ssl_certificate_key /etc/letsencrypt/live/HOST_NAME/privkey.pem;
+                ssl_certificate /etc/letsencrypt/live/$HOSTNAME/fullchain.pem;
+                ssl_certificate_key /etc/letsencrypt/live/$HOSTNAME/privkey.pem;
           }
 
 
           server {
-                if (\$host = HOST_NAME) {
+                if (\$host = $HOSTNAME) {
                         return 301 https://\$host\$request_uri;
                 }
 
 
-                server_name  HOST_NAME;
+                server_name  $HOSTNAME;
 
             listen 80;
                 return 404;
@@ -152,7 +152,7 @@ echo "Installing docker and docker-compose"
 apt update && apt install docker docker-compose jq unzip sendmail -y
 
 echo "Setting hostname: $HOSTNAME"
-sed -i 's/HOST_NAME/$HOSTNAME/g' ./docker-compose.yml
+sed -i "s/HOST_NAME/$HOSTNAME/g" ./docker-compose.yml
 
 echo "Building and creating docker containers"
 if ! docker-compose up --build -d; then
