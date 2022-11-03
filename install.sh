@@ -151,6 +151,8 @@ echo "Installing docker and docker-compose"
 apt update && apt install docker docker-compose jq unzip sendmail -y
 
 echo "Setting hostname: $HOSTNAME"
+sed -i "s/fhir:/fhir_$HOSTNAME:/g" docker-compose.yml
+sed -i "s/db:/db_$HOSTNAME:/g" docker-compose.yml
 sed -i "s/HOST_NAME/$HOSTNAME/g" ./docker-compose.yml
 
 echo "Building and creating docker containers"
