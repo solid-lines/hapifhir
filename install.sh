@@ -100,7 +100,7 @@ EOF
 
 function install_upstream {
         mkdir -p /etc/nginx/upstream
-        cat <<EOF > /etc/nginx/upstream/hapifhir.conf
+        cat <<EOF > /etc/nginx/upstream/${HOSTNAME}.conf
           server {
                 server_name  $HOSTNAME;
                 location / {
