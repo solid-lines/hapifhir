@@ -20,7 +20,7 @@ services:
     networks:
       - HOST_NAME
     depends_on:
-      - db
+      - db_HOST_NAME
 
   db_HOST_NAME:
     container_name: db_HOST_NAME
