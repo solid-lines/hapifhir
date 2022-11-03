@@ -22,6 +22,7 @@ services:
       - db
 
   db:
+    container_name: db
     image: postgres
     restart: always
     environment:
