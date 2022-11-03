@@ -19,6 +19,8 @@ services:
       - "7000:8080"
     networks:
       - HOST_NAME
+    volumes:
+      - /var/log/hapifhir/HOST_NAME:/usr/local/tomcat/logs
     depends_on:
       - db_HOST_NAME
 
