@@ -1,11 +1,8 @@
 # HAPIFHIR-docker-compose
 
-Run: ./install.sh \<HOSTNAME\>
+Modify .env with desired values
 
-1. Update server
-2. Add the given \<HOSTNAME\> to the configuration files
-3. Build and create docker containers
-4. Update Nginx configuration files
+Run: ./install.sh
   
 Go to https://\<HOSTNAME\> 
 
