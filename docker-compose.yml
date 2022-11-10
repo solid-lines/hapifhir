@@ -1,47 +1,50 @@
-version: '3'
+version: '3.7'
 
 services:
 
-  fhir_HOST_NAME:
-    container_name: fhir_HOST_NAME
-    image: hapiproject/hapi:v5.6.0
+  fhir:
+    container_name: fhir_${HOST_NAME:-localhost}
+    image: hapiproject/hapi:v${HAPIFHIR_VERSION:-5.6.0}
     restart: always
     environment:
       profiles.active: r4
-      spring.datasource.url: 'jdbc:postgresql://db_HOST_NAME:5432/hapi'
-      spring.datasource.username: admin
-      spring.datasource.password: admin
+      spring.datasource.url: 'jdbc:postgresql://db_${HOST_NAME:-localhost}:5432/${POSTGRES_DB:-hapi}'
+      spring.datasource.username: ${POSTGRES_USER:-hapi}
+      spring.datasource.password: ${POSTGRES_PASSWORD:-changeme}
       spring.datasource.driverClassName: org.postgresql.Driver
       jpa.properties.hibernate.dialect: ca.uhn.fhir.jpa.model.dialect.HapiFhirPostgres94Dialect
-      hapi.fhir.server_address: "https://HOST_NAME/fhir"
-      hapi.fhir.tester.home.server_address: "https://HOST_NAME/fhir"
+      hapi.fhir.server_address: "https://${HOST_NAME:-localhost}g/fhir"
+      hapi.fhir.tester.home.server_address: "https://${HOST_NAME:-localhost}/fhir"
     ports:
-      - "7000:8080"
+      - "${HAPIFHIR_EXPOSED_PORT:-8080}:8080"
     networks:
-      - HOST_NAME
+      - frontend
     volumes:
-      - /var/log/hapifhir/HOST_NAME:/usr/local/tomcat/logs
+      - /var/log/hapifhir/${HOST_NAME:-localhost}:/usr/local/tomcat/logs
     depends_on:
-      - db_HOST_NAME
+      - db
 
-  db_HOST_NAME:
-    container_name: db_HOST_NAME
-    image: postgres
+  db:
+    container_name: db_${HOST_NAME:-localhost}
+    image: postgres:${POSTGRES_VERSION:-12}
     restart: always
     environment:
-      POSTGRES_PASSWORD: admin
-      POSTGRES_USER: admin
-      POSTGRES_DB: hapi
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+      POSTGRES_USER: ${POSTGRES_USER:-hapi}
+      POSTGRES_DB: ${POSTGRES_DB:-hapi}
     # not needed for networking between containers but here for troubleshooting
     ports:
-      - "5433:5432"
+      - "${POSTGRES_EXPOSED_PORT:-5432}:5432"
     networks:
-      - HOST_NAME
+      - frontend
     volumes:
       - ./data:/var/lib/postgresql/data
+      
 volumes:
   db:
     driver: local
+    
 networks:
-  HOST_NAME:
+  frontend:
+    name: network_${HOST_NAME:-localhost}
     driver: bridge
