@@ -1,7 +1,5 @@
 version: '3.7'
-
 services:
-
   fhir:
     container_name: fhir_${HOSTNAME:-localhost}
     image: hapiproject/hapi:v${HAPIFHIR_VERSION:-5.6.0}
@@ -32,7 +30,6 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
       POSTGRES_USER: ${POSTGRES_USER:-hapi}
       POSTGRES_DB: ${POSTGRES_DB:-hapi}
-    # not needed for networking between containers but here for troubleshooting
     ports:
       - "${POSTGRES_EXPOSED_PORT:-5432}:5432"
     networks:
@@ -46,5 +43,5 @@ volumes:
     
 networks:
   frontend:
-    name: network_${HOST_NAME:-localhost}
+    name: network_${HOSTNAME:-localhost}
     driver: bridge
