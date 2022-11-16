@@ -4,6 +4,7 @@ services:
     container_name: fhir_${HOSTNAME:-localhost}
     image: hapiproject/hapi:v${HAPIFHIR_VERSION:-5.6.0}
     restart: always
+    hostname: fhir_${HOSTNAME:-localhost}
     environment:
       profiles.active: r4
       spring.datasource.url: 'jdbc:postgresql://db_${HOSTNAME:-localhost}:5432/${POSTGRES_DB:-hapi}'
