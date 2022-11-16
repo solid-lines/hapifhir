@@ -53,7 +53,7 @@ types_hash_max_size   2048;
 client_max_body_size  20M;
 client_body_timeout 10;
 client_header_timeout 10;
-large_client_header_buffers 2 1k;
+large_client_header_buffers 8 16k;
 EOF
 
 cat <<EOF > /etc/nginx/conf.d/gzip.conf
@@ -103,15 +103,16 @@ function install_upstream {
         cat <<EOF > /etc/nginx/upstream/${HOSTNAME}.conf
           server {
                 server_name  $HOSTNAME;
+                set \$fhir_frontend=fhir_$HOSTNAME;
                 location / {
-                  proxy_pass        http://localhost:7000;
-              proxy_set_header   Host \$host;
+                  proxy_pass        http://fhir_frontend:$HAPIFHIR_EXPOSED_PORT;
+                  proxy_set_header   Host \$host;
                   proxy_set_header   X-Real-IP \$remote_addr;
                   proxy_set_header   X-Forwarded-For \$proxy_add_x_forwarded_for;
                   proxy_set_header   X-Forwarded-Host \$server_name;
                 }
 
-                listen 443 ssl; # managed by Certbot
+                listen 443 ssl;
                 ssl_certificate /etc/letsencrypt/live/$HOSTNAME/fullchain.pem;
                 ssl_certificate_key /etc/letsencrypt/live/$HOSTNAME/privkey.pem;
           }
@@ -122,10 +123,9 @@ function install_upstream {
                         return 301 https://\$host\$request_uri;
                 }
 
-
                 server_name  $HOSTNAME;
 
-            listen 80;
+                listen 80;
                 return 404;
           }
 EOF
@@ -147,11 +147,26 @@ if [ $# -ne 1 ]; then
 fi
 
 HOSTNAME="$1"
+HOSTNAME_ENV=$(grep HOSTNAME .env | awk -F '=' '{printf $2}')
+
+CONTAINERS=$(docker ps | grep "_${HOSTNAME}")
+CONTAINERS_ENV=$(docker ps | grep "_${HOSTNAME_ENV}")
+
+if [[ $CONTAINERS != "" ]]; then
+  echo "HapiFHIR containers are already running with provided hostname: ${HOSTNAME}" 
+  exit 1
+fi
+
+if [[ $CONTAINERS_ENV != "" ]]; then
+  echo "HapiFHIR containers are already running with current hostname in .env: ${HOSTNAME_ENV}" 
+  exit 1
+fi
+
 echo "Installing docker and docker-compose"
 apt update && apt install docker docker-compose jq unzip sendmail -y
 
 echo "Setting hostname: $HOSTNAME"
-sed -i "s/HOST_NAME/$HOSTNAME/g" ./docker-compose.yml
+sed -i "s/$HOSTNAME_ENV/$HOSTNAME/g" ./docker-compose.yml
 
 echo "Building and creating docker containers"
 if ! docker-compose up --build -d; then
