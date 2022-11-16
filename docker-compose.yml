@@ -7,7 +7,7 @@ services:
     hostname: fhir_${HOSTNAME:-localhost}
     environment:
       profiles.active: r4
-      spring.datasource.url: 'jdbc:postgresql://db_${HOSTNAME:-localhost}:5432/${POSTGRES_DB:-hapi}'
+      spring.datasource.url: 'jdbc:postgresql://db:5432/${POSTGRES_DB:-hapi}'
       spring.datasource.username: ${POSTGRES_USER:-hapi}
       spring.datasource.password: ${POSTGRES_PASSWORD:-changeme}
       spring.datasource.driverClassName: org.postgresql.Driver
