@@ -3,29 +3,29 @@ version: '3.7'
 services:
 
   fhir:
-    container_name: fhir_${HOST_NAME:-localhost}
+    container_name: fhir_${HOSTNAME:-localhost}
     image: hapiproject/hapi:v${HAPIFHIR_VERSION:-5.6.0}
     restart: always
     environment:
       profiles.active: r4
-      spring.datasource.url: 'jdbc:postgresql://db_${HOST_NAME:-localhost}:5432/${POSTGRES_DB:-hapi}'
+      spring.datasource.url: 'jdbc:postgresql://db_${HOSTNAME:-localhost}:5432/${POSTGRES_DB:-hapi}'
       spring.datasource.username: ${POSTGRES_USER:-hapi}
       spring.datasource.password: ${POSTGRES_PASSWORD:-changeme}
       spring.datasource.driverClassName: org.postgresql.Driver
       jpa.properties.hibernate.dialect: ca.uhn.fhir.jpa.model.dialect.HapiFhirPostgres94Dialect
-      hapi.fhir.server_address: "https://${HOST_NAME:-localhost}g/fhir"
-      hapi.fhir.tester.home.server_address: "https://${HOST_NAME:-localhost}/fhir"
+      hapi.fhir.server_address: "https://${HOSTNAME:-localhost}g/fhir"
+      hapi.fhir.tester.home.server_address: "https://${HOSTNAME:-localhost}/fhir"
     ports:
       - "${HAPIFHIR_EXPOSED_PORT:-8080}:8080"
     networks:
       - frontend
     volumes:
-      - /var/log/hapifhir/${HOST_NAME:-localhost}:/usr/local/tomcat/logs
+      - /var/log/hapifhir/${HOSTNAME:-localhost}:/usr/local/tomcat/logs
     depends_on:
       - db
 
   db:
-    container_name: db_${HOST_NAME:-localhost}
+    container_name: db_${HOSTNAME:-localhost}
     image: postgres:${POSTGRES_VERSION:-12}
     restart: always
     environment:
