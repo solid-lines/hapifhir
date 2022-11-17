@@ -188,10 +188,14 @@ echo "Setting hostname: $HOSTNAME"
 sed -i "s/$HOSTNAME_ENV/$HOSTNAME/g" .env ./docker-compose.yml
 
 # Change exposed port to the next available one. Parameters: Initial Port and Limit Port
-echo "EXPOSED:$(grep HAPIFHIR_EXPOSED_PORT .env | awk -F '=' '{printf $2}')"
+echo "EXPOSED HAPI:$(grep HAPIFHIR_EXPOSED_PORT .env | awk -F '=' '{printf $2}')"
 getNextPort "$(grep HAPIFHIR_EXPOSED_PORT .env | awk -F '=' '{printf $2}')" "1000"
 echo "AVAILABLE:$AVAILABLE_PORT"
 sed -i "s/HAPIFHIR_EXPOSED_PORT=$HAPIFHIR_EXPOSED_PORT/HAPIFHIR_EXPOSED_PORT=$AVAILABLE_PORT/g" .env
+echo "EXPOSED POSTGRES:$(grep POSTGRES_EXPOSED_PORT .env | awk -F '=' '{printf $2}')"
+getNextPort "$(grep POSTGRES_EXPOSED_PORT .env | awk -F '=' '{printf $2}')" "1000"
+echo "AVAILABLE:$AVAILABLE_PORT"
+sed -i "s/POSTGRES_EXPOSED_PORT=$POSTGRES_EXPOSED_PORT/POSTGRES_EXPOSED_PORT=$AVAILABLE_PORT/g" .env
 
 echo "Building and creating docker containers"
 if ! docker-compose up --build -d; then
