@@ -11,7 +11,7 @@ function getNextPort() {
         do
                 echo "PORT:$PORT"
                 NETSTAT=$(netstat -utna | grep ${PORT})
-                if [[ $NETSTAT != "" ]]; then
+                if [[ $NETSTAT == "" ]]; then
                         AVAILABLE_PORT=$PORT
                         echo "AVAILABLE_PORT:$AVAILABLE_PORT"
                         break
