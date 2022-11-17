@@ -2,13 +2,18 @@
 
 function getNextPort() {
         INIT_PORT="${1}"
+        echo "INIT_PORT:$INIT_PORT"
         LIMIT_PORT="${2}"
+        echo "LIMIT_PORT:$LIMIT_PORT"
         FINAL_PORT=$(( $INIT_PORT + $LIMIT_PORT ))
+        echo "FINAL_PORT:$FINAL_PORT"
         for PORT in $(seq ${INIT_PORT} ${FINAL_PORT})
         do
+                echo "PORT:$PORT"
                 NETSTAT=$(netstat -utna | grep ${PORT})
                 if [[ $NETSTAT != "" ]]; then
                         AVAILABLE_PORT=$PORT
+                        echo "AVAILABLE_PORT:$AVAILABLE_PORT"
                         break
                 fi
         done
@@ -186,7 +191,7 @@ sed -i "s/$HOSTNAME_ENV/$HOSTNAME/g" .env ./docker-compose.yml
 echo "EXPOSED:$(grep HAPIFHIR_EXPOSED_PORT .env | awk -F '=' '{printf $2}')"
 getNextPort "$(grep HAPIFHIR_EXPOSED_PORT .env | awk -F '=' '{printf $2}')" "1000"
 echo "AVAILABLE:$AVAILABLE_PORT"
-sed -i "s/=$HAPIFHIR_EXPOSED_PORT/=$AVAILABLE_PORT/g" .env
+sed -i "s/HAPIFHIR_EXPOSED_PORT=$HAPIFHIR_EXPOSED_PORT/HAPIFHIR_EXPOSED_PORT=$AVAILABLE_PORT/g" .env
 
 echo "Building and creating docker containers"
 if ! docker-compose up --build -d; then
