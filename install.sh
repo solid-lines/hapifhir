@@ -1,5 +1,19 @@
 #!/bin/bash
 
+function getNextPort() {
+        INIT_PORT="${1}"
+        LIMIT_PORT="${2}"
+        FINAL_PORT=$(( $INIT_PORT + $LIMIT_PORT ))
+        for PORT in $(seq ${INIT_PORT} ${FINAL_PORT})
+        do
+                NETSTAT=$(netstat -utna | grep ${PORT})
+                if [[ $NETSTAT != "" ]]; then
+                        AVAILABLE_PORT=$PORT
+                        break
+                fi
+        done
+}
+
 function install_nginx {
 cat <<EOF > /etc/nginx/nginx.conf
         user   www-data;
@@ -153,12 +167,12 @@ CONTAINERS=$(docker ps | grep "_${HOSTNAME}")
 CONTAINERS_ENV=$(docker ps | grep "_${HOSTNAME_ENV}")
 
 if [[ $CONTAINERS != "" ]]; then
-  echo "HapiFHIR containers are already running with provided hostname: ${HOSTNAME}" 
+  echo "HapiFHIR containers are already running with provided hostname: ${HOSTNAME}"
   exit 1
 fi
 
 if [[ $CONTAINERS_ENV != "" ]]; then
-  echo "HapiFHIR containers are already running with current hostname in .env: ${HOSTNAME_ENV}" 
+  echo "HapiFHIR containers are already running with current hostname in .env: ${HOSTNAME_ENV}"
   exit 1
 fi
 
@@ -167,6 +181,12 @@ apt update && apt install docker docker-compose jq unzip sendmail -y
 
 echo "Setting hostname: $HOSTNAME"
 sed -i "s/$HOSTNAME_ENV/$HOSTNAME/g" .env ./docker-compose.yml
+
+# Change exposed port to the next available one. Parameters: Initial Port and Limit Port
+echo "EXPOSED:$(grep HAPIFHIR_EXPOSED_PORT .env | awk -F '=' '{printf $2}')"
+getNextPort "$(grep HAPIFHIR_EXPOSED_PORT .env | awk -F '=' '{printf $2}')" "1000"
+echo "AVAILABLE:$AVAILABLE_PORT"
+sed -i "s/=$HAPIFHIR_EXPOSED_PORT/=$AVAILABLE_PORT/g" .env
 
 echo "Building and creating docker containers"
 if ! docker-compose up --build -d; then
@@ -199,4 +219,3 @@ else
 fi
 
 echo "Successfully installed HapiFHIR."
-
