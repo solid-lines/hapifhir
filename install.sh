@@ -188,13 +188,15 @@ echo "Setting hostname: $HOSTNAME"
 sed -i "s/$HOSTNAME_ENV/$HOSTNAME/g" .env ./docker-compose.yml
 
 # Change exposed port to the next available one. Parameters: Initial Port and Limit Port
-echo "EXPOSED HAPI:$(grep HAPIFHIR_EXPOSED_PORT .env | awk -F '=' '{printf $2}')"
-getNextPort "$(grep HAPIFHIR_EXPOSED_PORT .env | awk -F '=' '{printf $2}')" "1000"
+HAPIFHIR_EXPOSED_PORT=$(grep HAPIFHIR_EXPOSED_PORT .env | awk -F '=' '{printf $2}')
+echo "EXPOSED HAPI:$HAPIFHIR_EXPOSED_PORT"
+getNextPort "$HAPIFHIR_EXPOSED_PORT" "1000"
 echo "AVAILABLE:$AVAILABLE_PORT"
 echo 'sed -i "s/HAPIFHIR_EXPOSED_PORT=$HAPIFHIR_EXPOSED_PORT/HAPIFHIR_EXPOSED_PORT=$AVAILABLE_PORT/g" .env'
 sed -i "s/HAPIFHIR_EXPOSED_PORT=$HAPIFHIR_EXPOSED_PORT/HAPIFHIR_EXPOSED_PORT=$AVAILABLE_PORT/g" .env
-echo "EXPOSED POSTGRES:$(grep POSTGRES_EXPOSED_PORT .env | awk -F '=' '{printf $2}')"
-getNextPort "$(grep POSTGRES_EXPOSED_PORT .env | awk -F '=' '{printf $2}')" "1000"
+POSTGRES_EXPOSED_PORT=$(grep POSTGRES_EXPOSED_PORT .env | awk -F '=' '{printf $2}')
+echo "EXPOSED POSTGRES:$POSTGRES_EXPOSED_PORT"
+getNextPort "$POSTGRES_EXPOSED_PORT" "1000"
 echo "AVAILABLE:$AVAILABLE_PORT"
 echo 'sed -i "s/POSTGRES_EXPOSED_PORT=$POSTGRES_EXPOSED_PORT/POSTGRES_EXPOSED_PORT=$AVAILABLE_PORT/g" .env'
 sed -i "s/POSTGRES_EXPOSED_PORT=$POSTGRES_EXPOSED_PORT/POSTGRES_EXPOSED_PORT=$AVAILABLE_PORT/g" .env
