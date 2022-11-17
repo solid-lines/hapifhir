@@ -191,10 +191,12 @@ sed -i "s/$HOSTNAME_ENV/$HOSTNAME/g" .env ./docker-compose.yml
 echo "EXPOSED HAPI:$(grep HAPIFHIR_EXPOSED_PORT .env | awk -F '=' '{printf $2}')"
 getNextPort "$(grep HAPIFHIR_EXPOSED_PORT .env | awk -F '=' '{printf $2}')" "1000"
 echo "AVAILABLE:$AVAILABLE_PORT"
+echo 'sed -i "s/HAPIFHIR_EXPOSED_PORT=$HAPIFHIR_EXPOSED_PORT/HAPIFHIR_EXPOSED_PORT=$AVAILABLE_PORT/g" .env'
 sed -i "s/HAPIFHIR_EXPOSED_PORT=$HAPIFHIR_EXPOSED_PORT/HAPIFHIR_EXPOSED_PORT=$AVAILABLE_PORT/g" .env
 echo "EXPOSED POSTGRES:$(grep POSTGRES_EXPOSED_PORT .env | awk -F '=' '{printf $2}')"
 getNextPort "$(grep POSTGRES_EXPOSED_PORT .env | awk -F '=' '{printf $2}')" "1000"
 echo "AVAILABLE:$AVAILABLE_PORT"
+echo 'sed -i "s/POSTGRES_EXPOSED_PORT=$POSTGRES_EXPOSED_PORT/POSTGRES_EXPOSED_PORT=$AVAILABLE_PORT/g" .env'
 sed -i "s/POSTGRES_EXPOSED_PORT=$POSTGRES_EXPOSED_PORT/POSTGRES_EXPOSED_PORT=$AVAILABLE_PORT/g" .env
 
 echo "Building and creating docker containers"
