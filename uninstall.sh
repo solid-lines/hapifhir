@@ -13,7 +13,7 @@ if ! docker-compose down; then
 fi
 
 echo "Removing Rapidpro docker unused images..."
-docker rmi $(docker images -q -f dangling=true) 1>&2
+docker rmi $(docker images -q -f dangling=true) &> /dev/null
 yes | docker system prune 1>&2
 
 echo "Removing database volume..."
