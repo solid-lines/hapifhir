@@ -162,7 +162,7 @@ if [[ $CONTAINERS_ENV != "" ]]; then
 fi
 
 echo "Installing docker and docker-compose"
-apt update && apt install docker docker-compose jq unzip -y 1>&2
+apt update 1>&2 && apt install docker docker-compose jq unzip -y 1>&2
 
 echo "Setting hostname: $HOSTNAME"
 sed -i "s/$HOSTNAME_ENV/$HOSTNAME/g" .env ./docker-compose.yml
@@ -187,7 +187,7 @@ fi
 
 echo "Configuring nginx"
 if ! which nginx 1>/dev/null; then
-  apt update && apt install nginx -y 1>&2
+  apt update 1>&2 && apt install nginx -y 1>&2
   install_nginx
   install_upstream
 else
