@@ -14,7 +14,7 @@ fi
 
 echo "Removing Rapidpro docker unused images..."
 docker rmi $(docker images -q -f dangling=true) &> /dev/null
-yes | docker system prune 1>&2
+yes | docker system prune &> /dev/null
 
 echo "Removing database volume..."
 rm -rf $(pwd)/data
