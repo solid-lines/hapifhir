@@ -172,11 +172,13 @@ HAPIFHIR_EXPOSED_PORT=$(grep HAPIFHIR_EXPOSED_PORT .env | awk -F '=' '{printf $2
 getNextPort "$HAPIFHIR_EXPOSED_PORT" "1000"
 sed -i "s/HAPIFHIR_EXPOSED_PORT=$HAPIFHIR_EXPOSED_PORT/HAPIFHIR_EXPOSED_PORT=$AVAILABLE_PORT/g" .env
 echo "HapiFHIR docker service will be exposed on port: $AVAILABLE_PORT"
+HAPIFHIR_EXPOSED_PORT=$AVAILABLE_PORT
 
 POSTGRES_EXPOSED_PORT=$(grep POSTGRES_EXPOSED_PORT .env | awk -F '=' '{printf $2}')
 getNextPort "$POSTGRES_EXPOSED_PORT" "1000"
 sed -i "s/POSTGRES_EXPOSED_PORT=$POSTGRES_EXPOSED_PORT/POSTGRES_EXPOSED_PORT=$AVAILABLE_PORT/g" .env
 echo "Postgres docker service will be exposed on port: $AVAILABLE_PORT"
+POSTGRES_EXPOSED_PORT=$AVAILABLE_PORT
 
 echo "Building and creating docker containers"
 if ! docker-compose up --build -d; then
