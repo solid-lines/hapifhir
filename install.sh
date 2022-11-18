@@ -176,7 +176,7 @@ if [[ $CONTAINERS_ENV != "" ]]; then
 fi
 
 echo "Installing docker and docker-compose"
-apt update && apt install docker docker-compose jq unzip sendmail -y
+apt update 1>&2 && apt install docker docker-compose jq unzip sendmail -y
 
 echo "Setting hostname: $HOSTNAME"
 sed -i "s/$HOSTNAME_ENV/$HOSTNAME/g" .env ./docker-compose.yml
@@ -201,7 +201,7 @@ fi
 
 echo "Configuring nginx"
 if ! which nginx 1>/dev/null; then
-  apt update && apt install nginx -y
+  apt update 1>&2 && apt install nginx -y
   install_nginx
   install_upstream
 else
@@ -209,7 +209,7 @@ else
 fi
 
 if ! which certbot 1>/dev/null; then
-  sudo snap install --classic certbot
+  sudo snap install --classic certbot 1>&2
   sudo ln -s /snap/bin/certbot /usr/bin/certbot
   service nginx stop
   if ! certbot certonly -d $HOSTNAME --standalone -m daniel.castelao@solidlines.io --agree-tos -n --no-eff-email; then
