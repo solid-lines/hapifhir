@@ -27,6 +27,7 @@ services:
     container_name: db_${HOSTNAME:-localhost}
     image: postgres:${POSTGRES_VERSION:-12}
     restart: always
+    hostname: db_${HOSTNAME:-localhost}
     environment:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
       POSTGRES_USER: ${POSTGRES_USER:-hapi}
